@@ -12,10 +12,10 @@ const path = require("path");
 // INSTALL THESE DEPENDENCIES: passport-local, passport, bcryptjs, express-session
 // AND UN-COMMENT OUT FOLLOWING LINES:
 
-// const session       = require('express-session');
-// const passport      = require('passport');
+const session = require("express-session");
+const passport = require("passport");
 
-// require('./configs/passport');
+require("./configs/passport");
 
 // IF YOU STILL DIDN'T, GO TO 'configs/passport.js' AND UN-COMMENT OUT THE WHOLE FILE
 
@@ -61,8 +61,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(favicon(path.join(__dirname, "public", "images", "favicon.ico")));
 
 // ADD SESSION SETTINGS HERE:
+const MongoStore = require("connect-mongo")(session);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection
+    })
+  })
+);
 
 // USE passport.initialize() and passport.session() HERE:
+app.use(passport.initialize());
+app.use(passport.session());
 
 // default value for title local
 app.locals.title = "Express - Generated with IronGenerator";
@@ -72,10 +86,13 @@ app.locals.title = "Express - Generated with IronGenerator";
 const index = require("./routes/index");
 app.use("/", index);
 
-const projectRoutes = require("./routes/project");
-app.use("/api/projects", projectRoutes);
+// const projectRoutes = require("./routes/project");
+// app.use("/api/projects", projectRoutes);
 
-const taskRoutes = require("./routes/task");
-app.use("/api/tasks", taskRoutes);
+// const taskRoutes = require("./routes/task");
+// app.use("/api/tasks", taskRoutes);
+
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
 
 module.exports = app;

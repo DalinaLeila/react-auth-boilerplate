@@ -1,12 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Navbar as Nav } from "react-bootstrap";
+import { logout } from "./Auth/Auth";
 
-const Navbar = () => {
+const Navbar = props => {
+  const handleLogout = () => {
+    logout();
+    props.clearUser(null);
+  };
+
+  console.log(props);
   return (
     <Nav className="nav justify-content-end" bg="primary">
       <Link to="/">Home</Link>
-      <Link to="/projects">Projects</Link>
+      {props.user ? (
+        <>
+          <Link to="/projects">Projects</Link>
+          <Link to="/logout" onClick={() => handleLogout()}>
+            Logout
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link to="/login">Log in</Link>
+          <Link to="/signup">Sign up</Link>
+        </>
+      )}
     </Nav>
   );
 };
